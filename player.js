@@ -2,8 +2,6 @@ let players = [];
 
 function handlePlayer(socket, io) {
     players.push(new Player(socket.id));
-    console.log(players);
-    //socket.broadcast.emit('message', players);
     io.sockets.emit('message', players);
 
     // When this user emits, client side: socket.emit('otherevent',some data);
@@ -22,11 +20,16 @@ function handlePlayer(socket, io) {
 
     socket.on('disconnect', function () {
         removePlayer(this.id);
+        io.sockets.emit('message', players);
     });
 }
 
 function removePlayer(id) {
-    console.log('Player has disconnected:' + id);
+    for (let i = players.length - 1; i >= 0; i--) {
+        if (players[i].id === id) {
+            players.splice(i, 1);
+        }
+    }
 }
 
 function movePlayer() {
