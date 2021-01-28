@@ -12,7 +12,6 @@ function handlePlayer(socket, io) {
             console.log(`Player Id ${newPlayer.id} created at x: ${newPlayer.x} | y: ${newPlayer.y} --- ${players.length} players in the game.`);
 
             // Broadcast all players to everyone
-            //io.sockets.emit('addPlayer', newPlayer);
             socket.broadcast.emit('addPlayer', newPlayer);
         });
 

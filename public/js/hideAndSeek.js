@@ -1,20 +1,20 @@
 let socket;
-let otherPlayers = [];
-let playerList; // the div
 let myPlayer;
+let otherPlayers = [];
+let playerList; // the html div
 
 function setup() {
-
     createCanvas(400, 400);
+
     socket = io.connect('http://localhost:4444');
-    socket.on('connect', function () {
+    
+    socket.on('connect', function () { // still like to know why socket is undefined
         myPlayer = new Player(socket.id);
         updateDatePlayerList(otherPlayers);
-        socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.x, y: myPlayer.y });
+        socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.x, y: myPlayer.y }); // announce my arrival!
     });
 
     socket.on('addPlayer',
-        // When a player joins
         function (player) {
             otherPlayers.push(new OtherPlayer(player.id, player.x, player.y));
             updateDatePlayerList(otherPlayers);
@@ -22,7 +22,7 @@ function setup() {
     );
 
     socket.on('playerList',
-        // I joined and need the other players
+        // I just joined and need the list of other players
         function (players) {
             for (let player of players) {
                 otherPlayers.push(new OtherPlayer(player.id, player.x, player.y));
@@ -32,11 +32,10 @@ function setup() {
     );
 
     socket.on('removePlayer',
-        // remove this player
         function (id) {
             for (let i = otherPlayers.length - 1; i >= 0; i--) {
                 if (otherPlayers[i].id === id) {
-                    otherPlayers.splice(i, 1);
+                    otherPlayers.splice(i, 1); // should we return here? after updating list?
                 }
             }
             updateDatePlayerList(otherPlayers);
@@ -44,11 +43,11 @@ function setup() {
     );
 
     socket.on('moved',
-        // When some player moves
+        // When a player moves
         function (playerData) {
+            // TODO: find a more efficient way of getting the player, or return
             for (let otherPlayer of otherPlayers) {
                 if (playerData.id === otherPlayer.id) {
-                    print('checking ' + playerData);
                     otherPlayer.x = playerData.x;
                     otherPlayer.y = playerData.y;
                 }
@@ -56,6 +55,7 @@ function setup() {
         }
     );
 
+    // The HTML div that holds the list
     playerList = createDiv().position(20, 20);
 }
 
