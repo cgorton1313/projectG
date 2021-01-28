@@ -1,26 +1,33 @@
 let players = [];
 
 function handlePlayer(socket, io) {
-    players.push(new Player(socket.id));
-    io.sockets.emit('message', players);
 
-    // When this user emits, client side: socket.emit('otherevent',some data);
+    socket.on('newPlayer',
+        function (player) {
+            // send player list to this new player
+            socket.emit('playerList', players);
+
+            let newPlayer = new Player(player.id, player.x, player.y);
+            players.push(newPlayer);
+            console.log(`Player Id ${newPlayer.id} created at x: ${newPlayer.x} | y: ${newPlayer.y} --- ${players.length} players in the game.`);
+
+            // Broadcast all players to everyone
+            //io.sockets.emit('addPlayer', newPlayer);
+            socket.broadcast.emit('addPlayer', newPlayer);
+        });
+
     socket.on('moved',
-        function (data) {
-            // Data comes in as whatever was sent, including objects
-            //console.log("Received: 'mouse' " + data.x + " " + data.y);
-
+        function (playerData) {
             // Send it to all other clients
-            socket.broadcast.emit('mouse', data);
-
-            // This is a way to send to everyone including sender
-            // io.sockets.emit('message', "this goes to everyone");
+            socket.broadcast.emit('moved', playerData);
         }
     );
 
     socket.on('disconnect', function () {
-        removePlayer(this.id);
-        io.sockets.emit('message', players);
+        // Broadcast all players to everyone
+        io.sockets.emit('removePlayer', this.id);
+        removePlayer(this.id); // on server
+        console.log(`Player Id ${this.id} removed --- ${players.length} players remaining.`);
     });
 }
 
@@ -32,15 +39,12 @@ function removePlayer(id) {
     }
 }
 
-function movePlayer() {
-
-}
-
 class Player {
-    constructor(id) {
+    constructor(id, x, y) {
         this.id = id;
-        console.log(`Player Id ${id} created`);
+        this.x = x;
+        this.y = y;
     }
 }
 
-module.exports = {handlePlayer}
+module.exports = { handlePlayer }
