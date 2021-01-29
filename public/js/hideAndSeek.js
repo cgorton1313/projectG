@@ -4,10 +4,13 @@ let otherPlayers = [];
 let playerList; // the html div
 
 function setup() {
-    createCanvas(400, 400);
+    let canvasDiv = select('#canvasDiv');
+    let canvasDivHeight = select('body').height - (select('header').height + select('footer').height);
+    let canvas = createCanvas(canvasDiv.width, canvasDivHeight);
+    canvas.parent('#canvasDiv');
 
     socket = io.connect('http://localhost:4444');
-    
+
     socket.on('connect', function () { // still like to know why socket is undefined
         myPlayer = new Player(socket.id);
         updateDatePlayerList(otherPlayers);
