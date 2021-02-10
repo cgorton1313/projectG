@@ -6,8 +6,8 @@ let playerList; // the html div
 function setup() {
     let htmlBody = select('body');
     let canvas = createCanvas(windowWidth, windowHeight-8);
-
     canvas.parent(htmlBody);
+    print(`window size is: ${width} x ${height}`);
 
     socket = io.connect('http://localhost:4444');
 
