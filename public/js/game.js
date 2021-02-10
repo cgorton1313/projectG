@@ -2,19 +2,21 @@ let socket;
 let myPlayer;
 let otherPlayers = [];
 let playerList; // the html div
+let fieldSize;
 
 function setup() {
     let htmlBody = select('body');
-    let canvas = createCanvas(windowWidth, windowHeight-8);
+    let canvas = createCanvas(windowWidth, windowHeight - 8);
     canvas.parent(htmlBody);
     print(`window size is: ${width} x ${height}`);
+    fieldSize = {x: 2 * width, y: 2 * height};
 
     socket = io.connect('http://localhost:4444');
 
     socket.on('connect', function () { // still like to know why socket is undefined
         myPlayer = new Player(socket.id);
         updateDatePlayerList(otherPlayers);
-        socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.x, y: myPlayer.y }); // announce my arrival!
+        socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.position.x, y: myPlayer.position.y }); // announce my arrival!
     });
 
     socket.on('addPlayer',
@@ -66,17 +68,14 @@ function draw() {
     drawBackground();
 
     if (myPlayer) {
+        myPlayer.update();
         myPlayer.show();
+        camera.position.x = myPlayer.position.x;
+        camera.position.y = myPlayer.position.y;
     }
 
     for (let otherPlayer of otherPlayers) {
         otherPlayer.show();
-    }
-}
-
-function mouseMoved() {
-    if (myPlayer) {
-        myPlayer.update();
     }
 }
 

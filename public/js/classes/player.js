@@ -1,20 +1,25 @@
 class Player {
     constructor(id) {
         this.id = id;
-        this.x = width / 2;
-        this.y = height / 2;
+        this.position = createVector(fieldSize.x / 2, fieldSize.y / 2);
         this.size = 10;
         this.color = 'green';
     }
     update() {
-        this.x = constrain(mouseX, 100, width - 100);
-        this.y = constrain(mouseY, 100, height - 100);
-        socket.emit('moved', { id: this.id, x: this.x, y: this.y });
+        let heading = createVector(camera.mouseX - this.position.x, camera.mouseY - this.position.y);
+        heading.setMag(2);
+        this.position.add(heading);
+        this.position.x = constrain(this.position.x, 0, fieldSize.x);
+        this.position.y = constrain(this.position.y, 0, fieldSize.y);
+        socket.emit('moved', { id: this.id, x: this.position.x, y: this.position.y });
     }
     show() {
+        strokeWeight(2);
+        stroke('black');
+        line(this.position.x, this.position.y, camera.mouseX, camera.mouseY);
         fill(this.color);
         strokeWeight(2);
         stroke('black');
-        circle(this.x, this.y, this.size);
+        circle(this.position.x, this.position.y, this.size);
     }
 }
