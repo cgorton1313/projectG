@@ -63,7 +63,7 @@ function setup() {
 }
 
 function draw() {
-    background(100);
+    drawBackground();
 
     if (myPlayer) {
         myPlayer.show();
@@ -89,39 +89,19 @@ function updateDatePlayerList(players) {
     playerList.html(html);
 }
 
-class Player {
-    constructor(id) {
-        this.id = id;
-        this.x = width / 2;
-        this.y = height / 2;
-        this.size = 10;
-        this.color = 'green';
+function drawBackground() {
+    background(100);
+    // draw lines
+    strokeWeight(1);
+    stroke(0, 40);
+    for (let x = 0; x < 2 * width; x += width / 20) {
+        line(x, 0, x, 2 * height);
     }
-    update() {
-        this.x = constrain(mouseX, 100, width - 100);
-        this.y = constrain(mouseY, 100, height - 100);
-        socket.emit('moved', { id: this.id, x: this.x, y: this.y });
+    for (let y = 0; y < 2 * height; y += height / 20) {
+        line(0, y, 2 * width, y);
     }
-    show() {
-        fill(this.color);
-        strokeWeight(2);
-        stroke('black');
-        circle(this.x, this.y, this.size);
-    }
-}
-
-class OtherPlayer {
-    constructor(id, x, y) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.size = 10;
-        this.color = 'red';
-    }
-    show() {
-        fill(this.color);
-        strokeWeight(2);
-        stroke('black');
-        circle(this.x, this.y, this.size);
-    }
+    stroke(0);
+    strokeWeight(8);
+    noFill();
+    rect(10, 10, 2 * width - 20, 2 * height - 20);
 }
