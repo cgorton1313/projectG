@@ -5,7 +5,7 @@ const app = express();
 
 // start the app
 const server = app.listen(config.app.port, () => {
-    console.log(`Hide and Seek server listening on port ${config.app.port}`);
+    console.log(`projectG server listening on port ${config.app.port}`);
 });
 
 // serve the /public files

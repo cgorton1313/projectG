@@ -4,10 +4,10 @@ let otherPlayers = [];
 let playerList; // the html div
 
 function setup() {
-    let canvasDiv = select('#canvasDiv');
-    let canvasDivHeight = select('body').height - (select('header').height + select('footer').height);
-    let canvas = createCanvas(canvasDiv.width, canvasDivHeight);
-    canvas.parent('#canvasDiv');
+    let htmlBody = select('body');
+    let canvas = createCanvas(windowWidth, windowHeight-8);
+
+    canvas.parent(htmlBody);
 
     socket = io.connect('http://localhost:4444');
 
