@@ -7,7 +7,14 @@ class Player {
     }
     update() {
         let heading = createVector(camera.mouseX - this.position.x, camera.mouseY - this.position.y);
-        heading.setMag(2);
+        
+        // stop if cursor is near player, else go towards cursor
+        if (heading.mag() < this.size) {
+            heading.setMag(0);
+        } else {
+            heading.setMag(2);
+        }
+        
         this.position.add(heading);
         this.position.x = constrain(this.position.x, 0, field.width);
         this.position.y = constrain(this.position.y, 0, field.height);
