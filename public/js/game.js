@@ -3,7 +3,7 @@ let myPlayer;
 let otherPlayers = [];
 let playerList; // the html div
 const field = {width: 800, height: 600};
-
+//
 function setup() {
     let htmlBody = select('body');
     let canvas = createCanvas(windowWidth, windowHeight - 8);
