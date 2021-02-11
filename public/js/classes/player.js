@@ -1,7 +1,7 @@
 class Player {
-    constructor(id) {
+    constructor(id, x, y) {
         this.id = id;
-        this.position = createVector(fieldSize.x / 2, fieldSize.y / 2);
+        this.position = createVector(x, y);
         this.size = 10;
         this.color = 'green';
     }
@@ -9,8 +9,8 @@ class Player {
         let heading = createVector(camera.mouseX - this.position.x, camera.mouseY - this.position.y);
         heading.setMag(2);
         this.position.add(heading);
-        this.position.x = constrain(this.position.x, 0, fieldSize.x);
-        this.position.y = constrain(this.position.y, 0, fieldSize.y);
+        this.position.x = constrain(this.position.x, 0, field.width);
+        this.position.y = constrain(this.position.y, 0, field.height);
         socket.emit('moved', { id: this.id, x: this.position.x, y: this.position.y });
     }
     show() {

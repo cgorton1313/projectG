@@ -2,19 +2,19 @@ let socket;
 let myPlayer;
 let otherPlayers = [];
 let playerList; // the html div
-let fieldSize;
+const field = {width: 800, height: 600};
 
 function setup() {
     let htmlBody = select('body');
     let canvas = createCanvas(windowWidth, windowHeight - 8);
     canvas.parent(htmlBody);
     print(`window size is: ${width} x ${height}`);
-    fieldSize = {x: 2 * width, y: 2 * height};
 
-    socket = io.connect('http://localhost:4444');
-
+    socket = io();
+    socket.connect('http://localhost:4444');
+    
     socket.on('connect', function () { // still like to know why socket is undefined
-        myPlayer = new Player(socket.id);
+        myPlayer = new Player(socket.id, field.width / 2, field.height / 2);
         updateDatePlayerList(otherPlayers);
         socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.position.x, y: myPlayer.position.y }); // announce my arrival!
     });
@@ -65,7 +65,7 @@ function setup() {
 }
 
 function draw() {
-    drawBackground();
+    drawBackground(field.width, field.height);
 
     if (myPlayer) {
         myPlayer.update();
@@ -88,19 +88,20 @@ function updateDatePlayerList(players) {
     playerList.html(html);
 }
 
-function drawBackground() {
+function drawBackground(w, h) {
     background(100);
     // draw lines
     strokeWeight(1);
     stroke(0, 40);
-    for (let x = 0; x < 2 * width; x += width / 20) {
-        line(x, 0, x, 2 * height);
+    for (let x = 0; x < w; x += w / 20) {
+        line(x, 0, x, h);
     }
-    for (let y = 0; y < 2 * height; y += height / 20) {
-        line(0, y, 2 * width, y);
+    for (let y = 0; y < h; y += h / 20) {
+        line(0, y, w, y);
     }
+    // draw border
     stroke(0);
     strokeWeight(8);
     noFill();
-    rect(10, 10, 2 * width - 20, 2 * height - 20);
+    rect(10, 10, w - 20, h - 20);
 }
