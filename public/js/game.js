@@ -2,7 +2,12 @@ let socket;
 let myPlayer;
 let otherPlayers = [];
 let playerList; // the html div
-const field = {width: 2560, height: 1280};
+const field = { width: 2560, height: 1280 };
+let fieldImg;
+
+function preload() {
+    fieldImg = loadImage('../images/field.png');
+}
 
 function setup() {
     let htmlBody = select('body');
@@ -12,7 +17,7 @@ function setup() {
 
     socket = io();
     socket.connect('http://localhost:4444');
-    
+
     socket.on('connect', function () { // still like to know why socket is undefined
         myPlayer = new Player(socket.id, field.width / 2, field.height / 2);
         updateDatePlayerList(otherPlayers);
@@ -104,4 +109,5 @@ function drawBackground(w, h) {
     strokeWeight(8);
     noFill();
     rect(10, 10, w - 20, h - 20);
+    image(fieldImg, 0, 0);
 }
