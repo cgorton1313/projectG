@@ -3,6 +3,7 @@ let myPlayer;
 let otherPlayers = [];
 let playerList; // the html div
 const field = { width: 2560, height: 1280 };
+const maxSpeed = 1;
 let fieldImg;
 
 function preload() {
@@ -10,6 +11,7 @@ function preload() {
 }
 
 function setup() {
+    angleMode(DEGREES);
     let htmlBody = select('body');
     let canvas = createCanvas(windowWidth, windowHeight - 8);
     canvas.parent(htmlBody);
@@ -67,6 +69,7 @@ function setup() {
 
     // The HTML div that holds the list
     playerList = createDiv().position(20, 20);
+
 }
 
 function draw() {
@@ -77,10 +80,25 @@ function draw() {
         myPlayer.show();
         camera.position.x = myPlayer.position.x;
         camera.position.y = myPlayer.position.y;
+
+        drawPixelView();
     }
 
     for (let otherPlayer of otherPlayers) {
         otherPlayer.show();
+    }
+}
+
+function drawPixelView() {
+    let pixels = myPlayer.getSurroundingPixels(myPlayer.position.x, myPlayer.position.y);
+
+    let i = 0;
+    for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < 3; x++) {
+            fill(pixels[i][0], pixels[i][1], pixels[i][2]);
+            square(camera.position.x + 100 + (x * 20), camera.position.y - 100 + (y * 20), 20);
+            i++;
+        }
     }
 }
 
