@@ -1,9 +1,11 @@
+const debugging = false;
+const field = { width: 2560, height: 1280 };
+const playerSize = 10;
+const maxSpeed = 4; // do not exceend playerSize / 2
 let socket;
 let myPlayer;
 let otherPlayers = [];
 let playerList; // the html div
-const field = { width: 2560, height: 1280 };
-const maxSpeed = 1;
 let fieldImg;
 
 function preload() {
@@ -81,7 +83,7 @@ function draw() {
         camera.position.x = myPlayer.position.x;
         camera.position.y = myPlayer.position.y;
 
-        drawPixelView();
+        if (debugging) drawPixelView();
     }
 
     for (let otherPlayer of otherPlayers) {
@@ -90,16 +92,17 @@ function draw() {
 }
 
 function drawPixelView() {
-    let pixels = myPlayer.getSurroundingPixels(myPlayer.position.x, myPlayer.position.y);
-
-    let i = 0;
-    for (let y = 0; y < 3; y++) {
-        for (let x = 0; x < 3; x++) {
-            fill(pixels[i][0], pixels[i][1], pixels[i][2]);
-            square(camera.position.x + 100 + (x * 20), camera.position.y - 100 + (y * 20), 20);
-            i++;
+    let radius = playerSize / 2;
+    for (let y = -radius; y <= radius; y++) {
+        for (let x = -radius; x <= radius; x++) {
+            let pixel = fieldImg.get(camera.position.x + x, camera.position.y + y);
+            fill(pixel[0], pixel[1], pixel[2]);
+            square(camera.position.x + 200 + (x * 20), camera.position.y - 200 + (y * 20), 20);
         }
     }
+    noFill();
+    stroke('red');
+    circle(camera.position.x + 200, camera.position.y - 200, 20 * playerSize);
 }
 
 function updateDatePlayerList(players) {

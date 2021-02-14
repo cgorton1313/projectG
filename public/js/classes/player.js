@@ -2,7 +2,7 @@ class Player {
     constructor(id, x, y) {
         this.id = id;
         this.position = createVector(x, y);
-        this.size = 10;
+        this.size = playerSize;
         this.color = 'green';
     }
     update() {
@@ -23,46 +23,33 @@ class Player {
         // TODO: this only checks the red color is 0, should check g and b
         let x = velocity.x;
         let y = velocity.y;
-        if (surroundingPixels[1][0] === 0) { // wall to north
-            if (currentHeading < 0) { // can't go this way
-                y = 0;
-            }
+        if (this.isWall(surroundingPixels[0])) { // wall to north
+            y = (currentHeading < 0) ? 0 : y;
         }
-        if (surroundingPixels[3][0] === 0) { // wall to west
-            if (currentHeading < -90 || currentHeading > 90) { // can't go this way
-                x = 0;
-            }
+        if (this.isWall(surroundingPixels[3])) { // wall to west
+            x = (currentHeading < -90 || currentHeading > 90) ? 0 : x;
         }
-        if (surroundingPixels[5][0] === 0) { // wall to east
-            if (currentHeading > -90 < currentHeading < 90) { // can't go this way
-                x = 0;
-            }
+        if (this.isWall(surroundingPixels[1])) { // wall to east
+            x = (currentHeading > -90 && currentHeading < 90) ? 0 : x;
         }
-        if (surroundingPixels[7][0] === 0) { // wall to south
-            if (currentHeading > 0) { // can't go this way
-                y = 0;
-            }
+        if (this.isWall(surroundingPixels[2])) { // wall to south
+            y = (currentHeading > 0) ? 0 : y;
         }
 
         correctedVelocity.set(x, y);
         return correctedVelocity;
-
+    }
+    isWall(pixel) {
+        return (pixel[0] === 0 && pixel[1] === 0 && pixel[2] === 0);
     }
     getSurroundingPixels(x, y) {
         let pixels = [];
-
-        // above
-        pixels.push(fieldImg.get(x - 1, y - 1));
-        pixels.push(fieldImg.get(x, y - 1));
-        pixels.push(fieldImg.get(x + 1, y - 1));
-        // in line
-        pixels.push(fieldImg.get(x - 1, y));
-        pixels.push(fieldImg.get(x, y));
-        pixels.push(fieldImg.get(x + 1, y));
-        // below
-        pixels.push(fieldImg.get(x - 1, y + 1));
-        pixels.push(fieldImg.get(x, y + 1));
-        pixels.push(fieldImg.get(x + 1, y + 1));
+        let radius = this.size / 2;
+        
+        pixels.push(fieldImg.get(x, y - radius)); // north
+        pixels.push(fieldImg.get(x + radius, y)); // east
+        pixels.push(fieldImg.get(x, y + radius)); // south
+        pixels.push(fieldImg.get(x - radius, y)); // west
 
         return pixels;
     }
