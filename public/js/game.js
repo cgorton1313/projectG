@@ -1,12 +1,16 @@
-const debugging = false;
+const showZoom = false;
 const field = { width: 2560, height: 1280 };
 const playerSize = 10;
 const maxSpeed = 4; // do not exceend playerSize / 2
+const flagAreaSize = 80;
+const flagSlowdownFactor = 0.9;
 let socket;
 let myPlayer;
 let otherPlayers = [];
 let playerList; // the html div
 let fieldImg;
+let leftFlagArea, rightFlagArea;
+let leftFlag, rightFlag;
 
 function preload() {
     fieldImg = loadImage('../images/field.png');
@@ -14,16 +18,22 @@ function preload() {
 
 function setup() {
     angleMode(DEGREES);
+
     let htmlBody = select('body');
     let canvas = createCanvas(windowWidth, windowHeight - 8);
     canvas.parent(htmlBody);
     print(`window size is: ${width} x ${height}`);
 
+    leftFlagArea = new FlagArea(1.5 * flagAreaSize, random(1.5 * flagAreaSize, field.height - (1.5 * flagAreaSize)));
+    rightFlagArea = new FlagArea(field.width - (1.5 * flagAreaSize), random(1.5 * flagAreaSize, field.height - (1.5 * flagAreaSize)));
+    leftFlag = new Flag(leftFlagArea.x, leftFlagArea.y);
+    rightFlag = new Flag(rightFlagArea.x, rightFlagArea.y);
+
     socket = io();
     socket.connect('http://localhost:4444');
 
     socket.on('connect', function () { // still like to know why socket is undefined
-        myPlayer = new Player(socket.id, field.width / 2, field.height / 2);
+        myPlayer = new Player(socket.id, field.width / 2, field.height / 2, 'right');
         updateDatePlayerList(otherPlayers);
         socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.position.x, y: myPlayer.position.y }); // announce my arrival!
     });
@@ -76,6 +86,10 @@ function setup() {
 
 function draw() {
     drawBackground(field.width, field.height);
+    leftFlagArea.show();
+    rightFlagArea.show();
+    leftFlag.show();
+    rightFlag.show();
 
     if (myPlayer) {
         myPlayer.update();
@@ -83,7 +97,7 @@ function draw() {
         camera.position.x = myPlayer.position.x;
         camera.position.y = myPlayer.position.y;
 
-        if (debugging) drawPixelView();
+        if (showZoom) drawPixelView();
     }
 
     for (let otherPlayer of otherPlayers) {
@@ -129,6 +143,7 @@ function drawBackground(w, h) {
     stroke(0);
     strokeWeight(8);
     noFill();
-    rect(10, 10, w - 20, h - 20);
+    rectMode(CORNER);
+    rect(0, 0, w, h);
     image(fieldImg, 0, 0);
 }

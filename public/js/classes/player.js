@@ -1,20 +1,58 @@
 class Player {
-    constructor(id, x, y) {
+    constructor(id, x, y, team) {
         this.id = id;
         this.position = createVector(x, y);
         this.size = playerSize;
-        this.color = 'green';
+        this.team = team;
+        this.color = (team === 'left') ? 'green' : 'purple';
     }
     update() {
-        let heading = createVector(camera.mouseX - this.position.x, camera.mouseY - this.position.y);
-        heading.setMag(constrain(heading.mag() / 10, 0, maxSpeed)); // scale speed
+        let velocity = createVector(camera.mouseX - this.position.x, camera.mouseY - this.position.y);
+        velocity.setMag(constrain(velocity.mag() / 10, 0, maxSpeed)); // scale speed
 
-        let limitedHeading = this.limitHeading(heading);
-        this.position.add(limitedHeading);
+        let limitedHeading = this.limitHeading(velocity);
+        
+        // show down if carrying flag
+        if (this.flag) {
+            limitedHeading.setMag(limitedHeading.mag() * flagSlowdownFactor);
+        }
+
+        this.position.add(limitedHeading); // update position
 
         this.position.x = constrain(this.position.x, 0, field.width);
         this.position.y = constrain(this.position.y, 0, field.height);
         socket.emit('moved', { id: this.id, x: this.position.x, y: this.position.y });
+    
+        let flagToCheck = (this.team === 'right') ? leftFlag : rightFlag;
+        this.checkFlagGrab(flagToCheck);
+        if (this.flag) {
+            this.flag.x = this.position.x;
+            this.flag.y = this.position.y;
+            let flagAreaToCheck = (this.team === 'right') ? rightFlagArea : leftFlagArea;
+            this.checkFlagReturn(flagAreaToCheck);
+        }
+    }
+    checkFlagReturn(flagArea) {
+        if (flagArea.isWithinArea(this.position)) {
+            // score a point
+
+            // return flag
+            if (this.team === 'right') {
+                leftFlag.x = leftFlagArea.x;
+                leftFlag.y = leftFlagArea.y;
+            } else {
+                rightFlag.x = rightFlagArea.x;
+                rightFlag.y = rightFlagArea.y;
+            }
+            this.flag = null;
+        }
+    }
+    checkFlagGrab(flag) {
+        let d = dist(this.position.x, this.position.y, flag.x, flag.y);
+        if (d < this.size) {
+            this.flag = (this.team === 'right') ? leftFlag : rightFlag;
+            // emit 'flagGrabbed' + id
+        }
     }
     limitHeading(velocity) { // returns heading in degrees that player can move
         let correctedVelocity = velocity.copy();
