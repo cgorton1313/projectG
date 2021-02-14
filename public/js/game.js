@@ -47,7 +47,8 @@ function setup() {
 
     socket.on('addPlayer',
         function (player) {
-            otherPlayers.push(new OtherPlayer(player.id, player.x, player.y));
+            print(player);
+            otherPlayers.push(new OtherPlayer(player.id, player.x, player.y, player.team));
             updateDatePlayerList(otherPlayers);
         }
     );
@@ -56,7 +57,7 @@ function setup() {
         // I just joined and need the list of other players
         function (players) {
             for (let player of players) {
-                otherPlayers.push(new OtherPlayer(player.id, player.x, player.y));
+                otherPlayers.push(new OtherPlayer(player.id, player.x, player.y, player.team));
             }
             updateDatePlayerList(otherPlayers);
         }
@@ -100,6 +101,7 @@ function draw() {
 
     if (myPlayer && myPlayer.team) {
         myPlayer.update();
+        socket.emit('moved', { id: myPlayer.id, x: myPlayer.position.x, y: myPlayer.position.y });
         myPlayer.show();
         camera.position.x = myPlayer.position.x;
         camera.position.y = myPlayer.position.y;
@@ -127,10 +129,10 @@ function drawPixelView() {
 }
 
 function updateDatePlayerList(players) {
-    let html = 'Me: ' + myPlayer.id + '<br><br>';
+    let html = 'Me: ' + myPlayer.id + ' - ' + myPlayer.team + '<br><br>';
     html += 'Other Players: <br>';
     for (let player of players) {
-        html += player.id + '<br>';
+        html += player.id + ' - ' + player.team + '<br>';
     }
     playerList.html(html);
 }

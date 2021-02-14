@@ -21,7 +21,6 @@ class Player {
 
         this.position.x = constrain(this.position.x, 0, field.width);
         this.position.y = constrain(this.position.y, 0, field.height);
-        socket.emit('moved', { id: this.id, x: this.position.x, y: this.position.y });
     
         let flagToCheck = (this.team === 'right') ? leftFlag : rightFlag;
         this.checkFlagGrab(flagToCheck);
@@ -91,7 +90,6 @@ class Player {
 
         return pixels;
     }
-
     show() {
         strokeWeight(2);
         stroke('black');
@@ -100,5 +98,8 @@ class Player {
         strokeWeight(2);
         stroke('black');
         circle(this.position.x, this.position.y, this.size);
+        stroke(255, 255, 255, 50);
+        noFill();
+        circle(this.position.x, this.position.y, this.size * 2); // halo
     }
 }
