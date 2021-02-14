@@ -1,15 +1,19 @@
 let players = [];
+let nextTeam = 'right'; // I hate to not use static class property but...
 
 function handlePlayer(socket, io) {
+
+    // flip the team assignment
+    nextTeam = (nextTeam === 'right') ? 'left' : 'right';
+    socket.emit('myTeamAssignment', nextTeam);
 
     socket.on('newPlayer',
         function (player) {
             // send player list to this new player
             socket.emit('playerList', players);
-
-            let newPlayer = new Player(player.id, player.x, player.y);
+            let newPlayer = new Player(player.id, player.x, player.y, player.team);
             players.push(newPlayer);
-            console.log(`Player Id ${newPlayer.id} created at x: ${newPlayer.x} | y: ${newPlayer.y} --- ${players.length} players in the game.`);
+            console.log(`Player Id ${newPlayer.id} created at x: ${newPlayer.x} | y: ${newPlayer.y} on team ${newPlayer.team} --- ${players.length} players in the game.`);
 
             // Broadcast all players to everyone
             socket.broadcast.emit('addPlayer', newPlayer);
@@ -39,10 +43,11 @@ function removePlayer(id) {
 }
 
 class Player {
-    constructor(id, x, y) {
+    constructor(id, x, y, team) {
         this.id = id;
         this.x = x;
         this.y = y;
+        this.team = team;
     }
 }
 

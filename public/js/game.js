@@ -32,11 +32,18 @@ function setup() {
     socket = io();
     socket.connect('http://localhost:4444');
 
-    socket.on('connect', function () { // still like to know why socket is undefined
-        myPlayer = new Player(socket.id, field.width / 2, field.height / 2, 'right');
-        updateDatePlayerList(otherPlayers);
-        socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.position.x, y: myPlayer.position.y }); // announce my arrival!
-    });
+    // socket.on('connect', function () {
+    //     myPlayer = new Player(socket.id, field.width / 2, field.height / 2, 'right');
+    //     updateDatePlayerList(otherPlayers);
+    // });
+
+    socket.on('myTeamAssignment',
+        function (assignment) {
+            myPlayer = new Player(socket.id, field.width / 2, field.height / 2, assignment);
+            //updateDatePlayerList(otherPlayers);
+            socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.position.x, y: myPlayer.position.y, team: myPlayer.team }); // announce my arrival!
+        }
+    );
 
     socket.on('addPlayer',
         function (player) {
@@ -91,7 +98,7 @@ function draw() {
     leftFlag.show();
     rightFlag.show();
 
-    if (myPlayer) {
+    if (myPlayer && myPlayer.team) {
         myPlayer.update();
         myPlayer.show();
         camera.position.x = myPlayer.position.x;

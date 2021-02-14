@@ -1,5 +1,5 @@
 const config = require(__dirname + '/config.js');
-const player = require(__dirname + '/player.js');
+const player = require(__dirname + '/serverPlayer.js');
 const express = require('express');
 const app = express();
 
@@ -15,9 +15,8 @@ app.use(express.static('public'));
 const socket = require('socket.io');
 const io = socket(server);
 
-// Register a callback function to run when we have an individual connection
-// This is run for each individual user that connects
-
+// register a callback function to run when we have an individual connection
+// this is run for each individual user that connects
 io.sockets.on('connection', function (socket) {  
     player.handlePlayer(socket, io);
 });
