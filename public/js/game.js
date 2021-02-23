@@ -13,7 +13,8 @@ let leftFlagArea, rightFlagArea;
 let leftFlag, rightFlag;
 
 function preload() {
-    fieldImg = loadImage('../images/field.png');
+    //console.log(console.log(window.location.href));
+    fieldImg = loadImage('images/field.png');
 }
 
 function setup() {
@@ -29,8 +30,10 @@ function setup() {
     leftFlag = new Flag(leftFlagArea.x, leftFlagArea.y);
     rightFlag = new Flag(rightFlagArea.x, rightFlagArea.y);
 
-    socket = io();
-    socket.connect('http://localhost:4444');
+    // socket = io();
+    // socket.connect('http://localhost:65000');
+    socket = io.connect('wss://cs.penguinhall.org',
+        { path: "/cgorton/projectG/socket.io" },);
 
     // socket.on('connect', function () {
     //     myPlayer = new Player(socket.id, field.width / 2, field.height / 2, 'right');
