@@ -1,7 +1,7 @@
 const showZoom = false;
 const field = { width: 2560, height: 1280 };
 const playerSize = 10;
-const maxSpeed = 4; // do not exceend playerSize / 2
+const maxSpeed = 1;
 const flagAreaSize = 80;
 const flagSlowdownFactor = 0.9;
 let socket;
@@ -13,7 +13,6 @@ let leftFlagArea, rightFlagArea;
 let leftFlag, rightFlag;
 
 function preload() {
-    //console.log(console.log(window.location.href));
     fieldImg = loadImage('images/field.png');
 }
 
@@ -30,20 +29,12 @@ function setup() {
     leftFlag = new Flag(leftFlagArea.x, leftFlagArea.y);
     rightFlag = new Flag(rightFlagArea.x, rightFlagArea.y);
 
-    // socket = io();
-    // socket.connect('http://localhost:65000');
-    socket = io.connect('wss://cs.penguinhall.org',
-        { path: "/cgorton/projectG/socket.io" },);
-
-    // socket.on('connect', function () {
-    //     myPlayer = new Player(socket.id, field.width / 2, field.height / 2, 'right');
-    //     updateDatePlayerList(otherPlayers);
-    // });
+    socket = io.connect('ws://localhost:65000');
+    // socket = io.connect('wss://cs.penguinhall.org', {path: '/cgorton/projectG/socket.io'});
 
     socket.on('myTeamAssignment',
         function (assignment) {
             myPlayer = new Player(socket.id, field.width / 2, field.height / 2, assignment);
-            //updateDatePlayerList(otherPlayers);
             socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.position.x, y: myPlayer.position.y, team: myPlayer.team }); // announce my arrival!
         }
     );
