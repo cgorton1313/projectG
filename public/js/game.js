@@ -1,7 +1,7 @@
 const showZoom = false;
 const field = { width: 2560, height: 1280 };
 const playerSize = 10;
-const maxSpeed = 1;
+const maxSpeed = 4; // not to exceed 1/2 player size
 const flagAreaSize = 80;
 const flagSlowdownFactor = 0.9;
 let socket;
@@ -29,7 +29,7 @@ function setup() {
     leftFlag = new Flag(leftFlagArea.x, leftFlagArea.y);
     rightFlag = new Flag(rightFlagArea.x, rightFlagArea.y);
 
-    socket = io.connect('ws://localhost:65000');
+    socket = io.connect('ws://192.168.30.167:65000');
     // socket = io.connect('wss://cs.penguinhall.org', {path: '/cgorton/projectG/socket.io'});
 
     socket.on('myTeamAssignment',
