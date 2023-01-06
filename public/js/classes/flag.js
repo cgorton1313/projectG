@@ -24,7 +24,8 @@ class FlagArea {
 }
 
 class Flag {
-  constructor(x, y) {
+  constructor(x, y, team) {
+    this.team = team;
     this.x = x;
     this.y = y;
     this.height = 20;

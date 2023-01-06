@@ -14,6 +14,7 @@ app.use(express.static('public'));
 // web sockets
 const socket = require('socket.io');
 const io = socket(server);
+// const io = require('socket.io')(server, {path: '/cgorton/projectG/socket.io'});
 
 // register a callback function to run when we have an individual connection
 // this is run for each individual user that connects

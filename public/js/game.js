@@ -13,7 +13,7 @@ let leftFlagArea, rightFlagArea;
 let leftFlag, rightFlag;
 
 function preload() {
-    fieldImg = loadImage('../images/field.png');
+    fieldImg = loadImage('images/field.png');
 }
 
 function setup() {
@@ -26,11 +26,14 @@ function setup() {
 
     leftFlagArea = new FlagArea(1.5 * flagAreaSize, random(1.5 * flagAreaSize, field.height - (1.5 * flagAreaSize)));
     rightFlagArea = new FlagArea(field.width - (1.5 * flagAreaSize), random(1.5 * flagAreaSize, field.height - (1.5 * flagAreaSize)));
-    leftFlag = new Flag(leftFlagArea.x, leftFlagArea.y);
-    rightFlag = new Flag(rightFlagArea.x, rightFlagArea.y);
+    leftFlag = new Flag(leftFlagArea.x, leftFlagArea.y, 'left');
+    rightFlag = new Flag(rightFlagArea.x, rightFlagArea.y, 'right');
 
     socket = io();
-    socket.connect('http://localhost:4444');
+    console.log(window.location.href);
+    socket.connect();
+    // socket.connect('https://cs.penguinhall.org/cgorton/projectG/socket.io');
+    //socket.connect('https://cs.penguinhall.org', {path: "/cgorton/projectG/socket.io"});
 
     // socket.on('connect', function () {
     //     myPlayer = new Player(socket.id, field.width / 2, field.height / 2, 'right');
@@ -47,7 +50,6 @@ function setup() {
 
     socket.on('addPlayer',
         function (player) {
-            print(player);
             otherPlayers.push(new OtherPlayer(player.id, player.x, player.y, player.team));
             updateDatePlayerList(otherPlayers);
         }
@@ -71,6 +73,18 @@ function setup() {
                 }
             }
             updateDatePlayerList(otherPlayers);
+        }
+    );
+
+    socket.on('flagPosition',
+        function (flagData) {
+            if (flagData.team === 'right') {
+                rightFlag.x = flagData.x;
+                rightFlag.y = flagData.y;
+            } else {
+                leftFlag.x = flagData.x;
+                leftFlag.y = flagData.y; 
+            }
         }
     );
 
@@ -103,6 +117,9 @@ function draw() {
         myPlayer.update();
         socket.emit('moved', { id: myPlayer.id, x: myPlayer.position.x, y: myPlayer.position.y });
         myPlayer.show();
+        if (myPlayer.flag) {
+            socket.emit('flagPosition', { team: myPlayer.flag.team, x: myPlayer.flag.x, y: myPlayer.flag.y });
+        }
         camera.position.x = myPlayer.position.x;
         camera.position.y = myPlayer.position.y;
 

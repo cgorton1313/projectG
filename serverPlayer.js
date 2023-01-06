@@ -26,6 +26,13 @@ function handlePlayer(socket, io) {
         }
     );
 
+    socket.on('flagPosition',
+        function (flagData) {
+            // Send flag position to all other clients
+            socket.broadcast.emit('flagPosition', flagData);
+        }
+    );
+
     socket.on('disconnect', function () {
         // Broadcast all players to everyone
         io.sockets.emit('removePlayer', this.id);
