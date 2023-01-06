@@ -1,7 +1,7 @@
 const showZoom = false;
 const field = { width: 2560, height: 1280 };
 const playerSize = 10;
-const maxSpeed = 4; // do not exceend playerSize / 2
+const maxSpeed = 4; // not to exceed 1/2 player size
 const flagAreaSize = 80;
 const flagSlowdownFactor = 0.9;
 let socket;
@@ -43,7 +43,6 @@ function setup() {
     socket.on('myTeamAssignment',
         function (assignment) {
             myPlayer = new Player(socket.id, field.width / 2, field.height / 2, assignment);
-            //updateDatePlayerList(otherPlayers);
             socket.emit('newPlayer', { id: myPlayer.id, x: myPlayer.position.x, y: myPlayer.position.y, team: myPlayer.team }); // announce my arrival!
         }
     );
